@@ -63,6 +63,7 @@ engine.load_checkpoint(args.checkpoint_file, verbose=True)
 if args.evaluate:
     tprint("Mode: Evaluation")
     engine.evaluate()
+    print("engine.evaluate executed successfully\n")
 
 
 # Visualize

@@ -22,9 +22,11 @@ file_contents = []
 
 # Loop through each file in the folder
 filenames = os.listdir(folder_path)
+
 filenames.sort()
 for filename in filenames:
-    if filename.endswith(".txt"):
+    # if filename.endswith(".txt"):
+    if filename.endswith(".png"):
         # Extract the frame index from the file name
         # Assiming the xxxxxx.txt format for each detection file here. If you use a different format, change this line accordingly.
         frame_index = int(filename[:6])
@@ -44,9 +46,12 @@ for filename in filenames:
 # Concatenate the contents of the list into a single string
 merged_contents = "\n".join(file_contents)
 
+print(merged_contents)
+
 # Write the concatenated string to a new file
 save_path = args.save_path
 if not os.path.exists(os.path.dirname(save_path)):
-    os.makedirs(os.path.dirname(save_path))
+    # os.makedirs(os.path.dirname(save_path))
+    os.makedirs(os.path.dirname(r'/home/tc/Desktop/ROB535/monocon_na565/merged_results/'))
 with open(save_path, "w") as f:
     f.write(merged_contents)

@@ -24,7 +24,7 @@ class BaseKITTIMono3DDataset(Dataset):
                  preload_gt_info: bool = False):
         
         super().__init__()
-        
+        print(base_root)
         assert os.path.isdir(base_root)
         self.base_root = base_root
         
@@ -70,6 +70,8 @@ class BaseKITTIMono3DDataset(Dataset):
     
     def load_image(self, idx: int) -> Tuple[np.ndarray, Dict[str, Any]]:
         image_arr = cv2.imread(self.image_files[idx])
+        # print("idx is ----------------------------------------", idx)
+
         image_data = cv2.cvtColor(image_arr, code=cv2.COLOR_BGR2RGB)
         
         img_metas = {

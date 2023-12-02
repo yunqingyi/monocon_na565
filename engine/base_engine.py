@@ -36,6 +36,7 @@ class BaseEngine:
         self.epochs = 1
         
         target_epochs = (cfg.SOLVER.OPTIM.NUM_EPOCHS)
+
         assert (self.epochs <= target_epochs), \
             f"Argument 'target_epochs'({target_epochs}) must be equal to or greater than 'epochs'({self.epochs})."
         self.target_epochs = target_epochs
