@@ -35,7 +35,7 @@ class BaseKITTIMono3DDataset(Dataset):
             file_prefix = f.readlines()
         self.file_prefix = [fp.replace('\n', '') for fp in file_prefix]
         
-        sub_root = 'testing' if (split == 'test') else 'training'
+        sub_root = 'testing_extra_credit' if (split == 'test') else 'training'
         
         # Image Files
         self.image_dir = os.path.join(base_root, sub_root, 'image_2')

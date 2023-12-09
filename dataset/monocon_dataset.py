@@ -75,7 +75,7 @@ class MonoConDataset(BaseKITTIMono3DDataset):
         self.filter_configs = filter_configs
         
     def __getitem__(self, idx: int) -> Dict[str, Any]:
-        
+        print("idx: ", idx)
         image, img_metas = self.load_image(idx)
         calib = self.load_calib(idx)
         

@@ -7,6 +7,7 @@ from tqdm.auto import tqdm
 from typing import Dict, List
 from yacs.config import CfgNode
 from torch.utils.data import DataLoader
+from utils.kitti_convert_utils import kitti_3d_to_file
 from torch.nn.utils import clip_grad_norm_
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -56,6 +57,8 @@ class MonoconEngine(BaseEngine):
     
     
     def build_loader(self, is_train: bool = True):
+        if not is_train:
+          print("split: ", self.cfg.DATA.TEST_SPLIT)
         dataset = MonoConDataset(
             base_root=self.cfg.DATA.ROOT,
             split=self.cfg.DATA.TRAIN_SPLIT if is_train else self.cfg.DATA.TEST_SPLIT,
@@ -119,8 +122,8 @@ class MonoconEngine(BaseEngine):
     
     
     @torch.no_grad()
-    def evaluate(self) -> Dict[str, float]:
-        
+    def evaluate(self, get_metrics=True, save_dir=None, single_file=True) -> Dict[str, float]:
+        print("save dir is ---------- ", save_dir)
         cvt_flag = False
         if self.model.training:
             self.model.eval()
@@ -134,13 +137,25 @@ class MonoconEngine(BaseEngine):
         for test_data in tqdm(self.test_loader, desc="Collecting Results..."):
             test_data = move_data_device(test_data, self.current_device)
             eval_results = self.model.batch_eval(test_data)
+            print("keys: ", eval_results.keys())
+
+            if save_dir is not None:
+                # print("\n", eval_results.keys())
+                # print(eval_results['img_bbox'])
+                # print("-----------")
+                # print(test_data.keys())
+                # print(test_data['img_metas'])
+
+                kitti_3d_to_file(eval_results, test_data['img_metas'], save_dir, single_file)
+                print("finished converting kitti 3d prediction to text file")
             
-            for field in ['img_bbox', 'img_bbox2d']:
-                eval_container[field].extend(eval_results[field])
-        
-        eval_dict = self.test_dataset.evaluate(eval_container,
-                                               eval_classes=['Pedestrian', 'Cyclist', 'Car'],
-                                               verbose=True)
+            if get_metrics:
+                for field in ['img_bbox', 'img_bbox2d']:
+                    eval_container[field].extend(eval_results[field])
+        if get_metrics:
+            eval_dict = self.test_dataset.evaluate(eval_container,
+                                                eval_classes=['Pedestrian', 'Cyclist', 'Car'],
+                                                verbose=True)
         
         if cvt_flag:
             self.model.train()

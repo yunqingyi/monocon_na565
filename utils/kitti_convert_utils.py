@@ -209,13 +209,21 @@ def kitti_file_to_3d(result_path: str, single_file: bool = False):
     # annos = [anno for anno in annos if len(anno['score']) > 0]
     return annos
 
-def kitti_3d_to_file(annos: Dict[str, List[Dict]], img_metas: Dict, folder: str, single_file: bool = False):
+def kitti_3d_to_file(annos: Dict[str, List[Dict]], img_metas: Dict, folder: str, single_file: bool = True):
     """Write the detection results to a file each frame or altogether.
     annos: a listdetection results of a mini batch, output from MonoConDetector.batch_eval().
     img_metas: a dictionary containing the meta information of the mini batch, output from MonoConDataset.
     single_file: whether to write the detection results of all frames to a single file.
     """
     annos = annos['img_bbox']
+    # print("annos: ", annos[0])
+    
+    print("single_file ", single_file)
+    # GOOGLE_DRIVE_PATH_AFTER_MYDRIVE = "/content/drive/MyDrive/Umich/NAVARCH_565/Final_project/localmaster/monocon_na565/"
+    # GOOGLE_DRIVE_PATH = os.path.join('dsrive', 'My Drive', GOOGLE_DRIVE_PATH_AFTER_MYDRIVE)
+    print(folder)
+    print(os.path.exists(os.path.dirname(folder)))
+    print(not os.path.exists(os.path.dirname(folder)))
     
     if single_file:
         if not os.path.exists(os.path.dirname(folder)):
@@ -226,15 +234,17 @@ def kitti_3d_to_file(annos: Dict[str, List[Dict]], img_metas: Dict, folder: str,
 
     if single_file:
         ### Open the file for the whole dataset
-        predict_txt = folder
+        # predict_txt = folder
+        predict_txt = os.path.join(folder, 'results.csv')
         f = open(predict_txt, 'a', newline='')
         w = csv.writer(f, delimiter=' ', lineterminator='\n')
-
+    
     ### Iterate over all frames
     for i, anno in enumerate(annos):
         ### Find the sample index
         sample_idx = img_metas['sample_idx'][i]
-
+        # print("sample_idx is ", sample_idx)
+        
         if not single_file:
             ### Open a file for the current frame
             predict_txt = os.path.join(folder, f'{sample_idx:06d}.txt')
@@ -432,4 +442,3 @@ def convert_to_kitti_2d(results_2d: List[List[np.ndarray]],
         returns.extend(annos)
         
     return returns
-                
